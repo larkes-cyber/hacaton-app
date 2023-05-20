@@ -6,11 +6,11 @@ import React, { useEffect, useState } from "react";
 import Service from "../Service";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import info from 'database.json';
 
 function Main() {
 
   const service = new Service()
-
   const {
     register,
     handleSubmit,
@@ -18,8 +18,8 @@ function Main() {
     formState,
     formState: { errors },
   } = useForm();
-
   const [chosenId, setChosenId] = useState(1);
+  const [multipleImages, setMultipleImages] = useState([]);
 
   function handleClick(id_) {
     setChosenId(Number(id_));
@@ -30,27 +30,28 @@ function Main() {
     axios.get('database.json').then((res)=>{setSwans(res)})
   }
 
-  function blobToBase64(blob) {
+  function fileToBase64(file) {
     return new Promise((resolve, _) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
+      reader.readAsDataURL(file)
+      reader.onloadend(()=>{
+        resolve(reader.result)
+      })
+      reader.onerror((error)=>{
+        _(error)
+      })
     });
   }
 
-  const [multipleImages, setMultipleImages] = useState([]);
   // Functions to preview multiple images
   const handleFileChange = (e) => {
     if (e.target.files) {
-      const imageArray = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      let index_ = Object.keys(imageArray).reduce((a, b) => imageArray[a] > imageArray[b] ? a : b)+1
-      for (let index = 0; index < imageArray.length; index++) {
-        const element = imageArray[index];
-        service.sendImage(index_+index, blobToBase64(element)).onloadend(()=>{updateJson()})
+      let files = e.target.files
+      let index_ = Object.keys(swans).reduce((a, b) => swans[a] > swans[b] ? a : b)+1
+      for (let index = 0; index < files.length; index++) {
+        const element = files[index];
+        service.sendImage(index_ + index, fileToBase64(element)).onloadend(()=>{updateJson()})
       }
-      setMultipleImages((prevImages) => prevImages.concat(imageArray));
     }
   };
   const render = (data) => {
@@ -66,58 +67,7 @@ function Main() {
       );
     });
   };
-  const [swans, setSwans] = useState({
-    1: {
-      title: "leb1",
-      total: 10,
-      ship: 1,
-      klik: 1,
-      small: 3,
-      process: 1,
-      feat: false,
-      date: "20.04.2001  12:00",
-    },
-    2: {
-      title: "leb2",
-      ship: 1,
-      total: 10,
-      klik: 1,
-      small: 3,
-      process: 2,
-      feat: false,
-      date: "20.04.2001  12:00",
-    },
-    3: {
-      title: "leb3",
-      ship: 1,
-      total: 10,
-      klik: 1,
-      small: 3,
-      process: 0,
-      feat: false,
-      date: "20.04.2001  12:00",
-    },
-    4: {
-      title: "leb4",
-      ship: 1,
-      total: 10,
-      klik: 1,
-      small: 3,
-      process: 2,
-      feat: false,
-      date: "20.04.2001  12:00",
-    },
-    5: {
-      title: "leb5",
-      ship: 1,
-      total: 10,
-      klik: 1,
-      small: 3,
-      process: 0,
-      feat: false,
-      date: "20.04.2001  12:00",
-    },
-  });
+  const [swans, setSwans] = useState(info);
 
   function swansUpdate() {
     let b = [];
