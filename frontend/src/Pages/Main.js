@@ -45,9 +45,10 @@ function Main() {
       const imageArray = Array.from(e.target.files).map((file) =>
         URL.createObjectURL(file)
       );
+      let index_ = Object.keys(imageArray).reduce((a, b) => imageArray[a] > imageArray[b] ? a : b)+1
       for (let index = 0; index < imageArray.length; index++) {
         const element = imageArray[index];
-        service.sendImage(Object.keys(imageArray).reduce((a, b) => imageArray[a] > imageArray[b] ? a : b), blobToBase64(element)).onloadend(()=>{updateJson()})
+        service.sendImage(index_+index, blobToBase64(element)).onloadend(()=>{updateJson()})
       }
       setMultipleImages((prevImages) => prevImages.concat(imageArray));
     }
