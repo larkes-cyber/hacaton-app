@@ -6,12 +6,12 @@ import "../styles/Swan.scss";
 
 function Swan({ data, chosen, setChosen, id_ }) {
 
-  console.log(data, chosen, setChosen, id_)
   const [featured, setFeatured] = useState(data["feat"]);
 
   return (
     <div
-      onClick={()=>{console.log(id_); setChosen(id_)}}
+      key={Number(id_)}
+      onClick={()=>{setChosen(id_)}}
       className={
         "swan " + (chosen.toString() === id_.toString() ? "chosen" : "")
       }

@@ -3,10 +3,14 @@ import Swan from "../Components/Swan";
 import SwanResult from "../Components/SwanResult";
 import "../styles/Main.scss";
 import React, { useEffect, useState } from "react";
-
+import Service from "../Service";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 function Main() {
+
+  const service = new Service()
+
   const {
     register,
     handleSubmit,
@@ -16,21 +20,35 @@ function Main() {
   } = useForm();
 
   const [chosenId, setChosenId] = useState(1);
-  console.log(chosenId, 'fasfadgagafga')
 
   function handleClick(id_) {
-    console.log(id_, "dsfaf");
     setChosenId(Number(id_));
     swansUpdate()
   }
 
+  function updateJson(){
+    axios.get('database.json').then((res)=>{setSwans(res)})
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   const [multipleImages, setMultipleImages] = useState([]);
   // Functions to preview multiple images
-  const changeMultipleFiles = (e) => {
+  const handleFileChange = (e) => {
     if (e.target.files) {
       const imageArray = Array.from(e.target.files).map((file) =>
         URL.createObjectURL(file)
       );
+      for (let index = 0; index < imageArray.length; index++) {
+        const element = imageArray[index];
+        service.sendImage(Object.keys(imageArray).reduce((a, b) => imageArray[a] > imageArray[b] ? a : b), blobToBase64(element)).onloadend(()=>{updateJson()})
+      }
       setMultipleImages((prevImages) => prevImages.concat(imageArray));
     }
   };
@@ -145,7 +163,7 @@ function Main() {
             accept="image/*"
             multiple
             {...register("file", { required: true })}
-            onChange={changeMultipleFiles}
+            onChange={handleFileChange}
             placeholder="Добавить фотографии"
           />
           {/* error handling with React Hook Form */}
