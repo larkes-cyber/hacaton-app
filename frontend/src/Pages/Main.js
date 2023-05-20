@@ -6,7 +6,9 @@ import React, { useEffect, useState } from "react";
 import Service from "../Service";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import info from 'database.json';
+
+import FileBase64 from 'react-file-base64';
+// import info from 'database.json';
 
 function Main() {
 
@@ -43,17 +45,22 @@ function Main() {
     });
   }
 
+  
   // Functions to preview multiple images
-  const handleFileChange = (e) => {
-    if (e.target.files) {
-      let files = e.target.files
+  const handleFileChange = (files) => {
+    if (files) {
       let index_ = Object.keys(swans).reduce((a, b) => swans[a] > swans[b] ? a : b)+1
+      
       for (let index = 0; index < files.length; index++) {
-        const element = files[index];
-        service.sendImage(index_ + index, fileToBase64(element)).onloadend(()=>{updateJson()})
+        const base64 = files[index];
+        console.log(base64)
+        service.sendImage(index_ + index, base64);
+        console.log(base64)
+        };
+
       }
     }
-  };
+  ;
   const render = (data) => {
     return data.map((image) => {
       return (
@@ -67,7 +74,58 @@ function Main() {
       );
     });
   };
-  const [swans, setSwans] = useState(info);
+  const [swans, setSwans] = useState({
+    "1": {
+      "title": "leb.jpg",
+      "total": 10,
+      "ship": 1,
+      "klik": 1,
+      "small": 3,
+      "process": 1,
+      "feat": false,
+      "date": "20.04.2001  12:00",
+    },
+    "2": {
+      "title": "leb2",
+      "ship": 1,
+      "total": 10,
+      "klik": 1,
+      "small": 3,
+      "process": 2,
+      "feat": false,
+      "date": "20.04.2001  12:00",
+    },
+    "3": {
+      "title": "leb3",
+      "ship": 1,
+      "total": 10,
+      "klik": 1,
+      "small": 3,
+      "process": 0,
+      "feat": false,
+      "date": "20.04.2001  12:00",
+    },
+    "4": {
+      "title": "leb4",
+      "ship": 1,
+      "total": 10,
+      "klik": 1,
+      "small": 3,
+      "process": 2,
+      "feat": false,
+      "date": "20.04.2001  12:00",
+    },
+    "5": {
+      "title": "leb5",
+      "ship": 1,
+      "total": 10,
+      "klik": 1,
+      "small": 3,
+      "process": 0,
+      "feat": false,
+      "date": "20.04.2001  12:00",
+    },
+  });
 
   function swansUpdate() {
     let b = [];
@@ -107,16 +165,8 @@ function Main() {
         </div>
         <div className="right">
           <SwanResult data={swans[Number(chosenId)]}/>
-          <input
-            className="addSwans"
-            type="file"
-            name="file1"
-            accept="image/*"
-            multiple
-            {...register("file", { required: true })}
-            onChange={handleFileChange}
-            placeholder="Добавить фотографии"
-          />
+          <FileBase64 multiple={true} onDone={(files)=>handleFileChange(files)} onChange={(e) => e.target.files} />
+
           {/* error handling with React Hook Form */}
           {errors.file && <p className="error">Please select an image</p>}
 
