@@ -20,6 +20,17 @@ class JsonDatabase():
         f.close()
         return img
 
+    def reWriteNote(self,id, note):
+        f = open(f'{self.name}.json')
+        data = json.load(f)
+        img = data[str(id)]
+        img['notes'] = note
+        data[str(id)] = img
+        f.close()
+        json_object = json.dumps(data, indent=4)
+        with open(f"{self.name}.json", "w") as outfile:
+            outfile.write(json_object)
+
     def removeImage(self,id):
         f = open(f'{self.name}.json')
         data = json.load(f)
@@ -98,6 +109,18 @@ class HighlightImageView(APIView):
 
 
 
+class ReWriteNote(APIView):
+    database = JsonDatabase()
+
+    def post(self, request):
+        database = JsonDatabase()
+        serializer = NoteSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            database.reWriteNote(
+                id = request.data['image_id'],
+                note = request.data['note']
+            )
+            return Response("d")
 
 class ImageServiceView(APIView):
 

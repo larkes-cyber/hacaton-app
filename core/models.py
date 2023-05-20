@@ -11,3 +11,7 @@ class SendImage(models.Model):
 
 class Image(models.Model):
     image_id = models.CharField(max_length = 100000000000)
+
+class Note(models.Model):
+    image_id = models.CharField(max_length = 100000000000)
+    note = models.CharField(max_length = 100000000000)

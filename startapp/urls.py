@@ -12,4 +12,5 @@ urlpatterns = [
     path('imageinfo/', ImageInfoView.as_view(), name="lolo"),
     path('deleteimage/', DeleteImageView.as_view(), name="lolo"),
     path('highlightimage/', HighlightImageView.as_view(), name="lolo"),
+    path('rewritenote/', ReWriteNote.as_view(), name="lolo"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_URL)
